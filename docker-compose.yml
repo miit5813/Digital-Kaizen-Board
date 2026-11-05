@@ -1,0 +1,16 @@
+services:
+  db:
+    image: postgres:16
+    container_name: kaizen-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: kaizen
+      POSTGRES_PASSWORD: kaizen
+      POSTGRES_DB: kaizen
+    ports:
+      - "5433:5432"
+    volumes:
+      - kaizen-data:/var/lib/postgresql/data
+
+volumes:
+  kaizen-data:
