@@ -1,4 +1,6 @@
+import { use } from 'react'
 import { prisma } from '../db.js'
+import { getUserAccess } from '../services/access.js'
 
 export default async function meRoutes(app) {
   app.get(
@@ -16,6 +18,8 @@ export default async function meRoutes(app) {
               login: { type: 'string' },
               fullName: { type: 'string' },
               email: { type: 'string', nullable: true },
+              roles: { type: 'array', items: {type: 'string'}},
+              permissions: {type: 'array', items: {type: 'string'}},
             },
           },
         },
@@ -25,12 +29,18 @@ export default async function meRoutes(app) {
       const user = await prisma.user.findUnique({
         where: { id: request.user.sub },
       })
-
       if (!user || !user.isActive) {
         return reply.code(401).send({ message: 'Пользователь не найден или отключён' })
       }
-
-      return user
+      const access = await getUserAccess(user.id)
+      return {
+        id: user.id,
+        login: user.login,
+        fullName: user.fullName,
+        email: user.email,
+        roles: access.roles,
+        permissions: access.permissions,
+      }
     }
   )
 }

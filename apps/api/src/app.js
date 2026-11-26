@@ -5,6 +5,7 @@ import jwt from "@fastify/jwt"
 import authRoutes from "./routes/auth.js"
 import authPlugin from "./plugins/auth.js"
 import meRoutes from "./routes/me.js"
+import cors from "@fastify/cors"
 
 export async function BuildApp() {
   const app = Fastify({ logger: true })
@@ -25,6 +26,7 @@ export async function BuildApp() {
   await app.register(authPlugin)
   await app.register(authRoutes)
   await app.register(meRoutes)
+  await app.register(cors, { origin: true })
 
   app.get(
     "/health",
